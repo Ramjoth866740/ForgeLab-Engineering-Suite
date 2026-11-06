@@ -99,7 +99,30 @@ PAGES = ["Dashboard", "Stress & materials", "Strength of materials advanced", "B
 with st.sidebar:
     st.markdown("# ⚡ ForgeLab")
     st.caption("MECHANICAL ENGINEERING · EV SYSTEMS")
-    current = st.radio("Navigate modules", PAGES, label_visibility="collapsed")
+    search_query = st.text_input(
+    "Search modules",
+    placeholder="Search engineering modules...",
+    key="module_search"
+).strip().casefold()
+
+filtered_pages = [
+    page for page in PAGES
+    if search_query in page.casefold()
+]
+
+if filtered_pages:
+    if st.session_state.get("module_navigation") not in filtered_pages:
+        st.session_state.pop("module_navigation", None)
+
+    current = st.radio(
+        "Navigate modules",
+        filtered_pages,
+        label_visibility="collapsed",
+        key="module_navigation"
+    )
+else:
+    current = "Dashboard"
+    st.warning("No matching modules found.")
     st.divider()
     st.caption("Core undergraduate engineering calculators and conceptual simulations")
     st.caption("Cloud session history is temporary unless exported.")

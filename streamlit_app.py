@@ -538,5 +538,5 @@ elif current == "History & reports":
     else: st.info("No calculations saved in this browser session yet. Run a module, then return here to export the results.")
 
 st.divider()
-st.caption("ForgeLab is an educational and preliminary engineering tool. Always validate units, material data, boundary conditions, manufacturer ratings, design codes and safety requirements before using any result in a real design.") st.form("aero_form"):
+st.caption("ForgeLab is an educational and preliminary engineering tool. Always validate units, material data, boundary conditions, manufacturer ratings, design codes and safety requirements before using any result in a real design.") 
         

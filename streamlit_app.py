@@ -457,7 +457,8 @@ elif current == "Fluid statics":
 
 elif current == "Aerodynamics":
     st.subheader("Vehicle aerodynamics and wind tunnel")
-    with        c1,c2=st.columns(2); v= c1.number_input("Vehicle speed (km/h)",value=100.0,min_value=0.0); rho=c2.number_input("Air density (kg/m³)",value=1.225,min_value=.00001); cd=c1.number_input("Drag coefficient Cd",value=.29,min_value=0.0); A=c2.number_input("Frontal area (m²)",value=2.2,min_value=.00001); cl=c1.number_input("Lift coefficient Cl (+ lift / − downforce)",value=-.1); go=st.form_submit_button("Calculate aerodynamic loads")
+        with st.form("aero_form"):
+        c1,c2=st.columns(2); v= c1.number_input("Vehicle speed (km/h)",value=100.0,min_value=0.0); rho=c2.number_input("Air density (kg/m³)",value=1.225,min_value=.00001); cd=c1.number_input("Drag coefficient Cd",value=.29,min_value=0.0); A=c2.number_input("Frontal area (m²)",value=2.2,min_value=.00001); cl=c1.number_input("Lift coefficient Cl (+ lift / − downforce)",value=-.1); go=st.form_submit_button("Calculate aerodynamic loads")
     if go:
         r=eng.aerodynamics(v,rho,cd,A,cl); result_panel("Aerodynamic load estimate",f"Speed V={v:.2f}/3.6 = {r['speed_m_s']:.3f} m/s\nDynamic pressure q=½ρV² = {r['dynamic_pressure_pa']:.2f} Pa\nDrag D=qCdA = {r['drag_n']:.2f} N\nPower Pdrag=DV = {r['drag_power_kw']:.3f} kW\nLift L=qClA = {r['lift_n']:.2f} N",[r"q=\frac12\rho V^2",r"D=\frac12\rho V^2C_DA",r"P_D=DV",r"L=\frac12\rho V^2C_LA"],[("Aerodynamic drag",f"{r['drag_n']:.1f} N"),("Drag power",f"{r['drag_power_kw']:.2f} kW"),("Lift (signed)",f"{r['lift_n']:.1f} N")],"Steady incompressible external-flow estimate with fixed coefficients; no yaw, ground effect, rotating wheels, ride-height or local pressure distribution. Coefficients require validated source data or tests.")
     aero_animation(v,cd)

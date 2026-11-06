@@ -7,7 +7,7 @@ import plotly.graph_objects as pgo
 
 import engineering as eng
 
-st.set_page_config(page_title="ForgeLab | Mechanical Engineering Suite", page_icon="⚡", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(page_title="ForgeLab | Mechanical Engineering Suite", page_icon="⚡", layout="wide", initial_sidebar_state="collapsed")
 
 # --------------------------- Theme and shared helpers ---------------------------
 st.markdown("""
@@ -15,7 +15,26 @@ st.markdown("""
 :root { color-scheme: dark; }
 [data-testid="stAppViewContainer"] { background: radial-gradient(circle at 8% 0%, #102a3d 0, #091522 34%, #07101b 75%); }
 [data-testid="stHeader"] { background: rgba(3,12,21,.72); }
-.block-container { padding-top: 1.2rem; max-width: 1450px; }
+
+.block-container { padding-top: 1rem; max-width: 1450px; padding-left: clamp(1rem, 3vw, 2.5rem); padding-right: clamp(1rem, 3vw, 2.5rem); }
+.hero-panel { padding: clamp(1.2rem, 4vw, 2.4rem); margin: .5rem 0 1.5rem; border: 1px solid #24516a; border-radius: 22px; background: linear-gradient(120deg,rgba(14,54,76,.96),rgba(9,22,37,.98) 65%,rgba(10,38,55,.96)); box-shadow: 0 18px 50px rgba(0,0,0,.18); }
+.hero-kicker { color: #69dff6; letter-spacing: .16em; font-size: .72rem; font-weight: 700; }
+.hero-title { color: #f1f7fb; font-size: clamp(2rem, 5vw, 3.6rem); line-height: 1.08; font-weight: 800; margin: .65rem 0; }
+.hero-title span { color: #65dff6; }
+.hero-copy { color: #a8c1d1; font-size: clamp(.95rem, 2vw, 1.12rem); max-width: 48rem; }
+.module-group-title { color: #75dff3; font-size: .78rem; font-weight: 800; letter-spacing: .12em; margin: 1.5rem 0 .6rem; }
+[data-testid="stVerticalBlockBorderWrapper"] { border-color: #21445a; background: linear-gradient(145deg,rgba(16,40,59,.82),rgba(8,22,35,.9)); border-radius: 14px; }
+.stButton button { min-height: 2.7rem; font-weight: 650; }
+@media (max-width: 640px) {
+ .block-container { padding-top: .65rem; padding-left: .8rem; padding-right: .8rem; }
+ .hero-panel { border-radius: 16px; padding: 1.15rem; margin-top: .2rem; }
+ .hero-title { font-size: 2rem; }
+ [data-testid="stMetric"] { padding: 9px; }
+ [data-testid="stMetricLabel"] { font-size: .72rem; }
+ [data-testid="stMetricValue"] { font-size: 1.15rem; }
+ h1 { font-size: 1.65rem !important; } h2 { font-size: 1.35rem !important; } h3 { font-size: 1.1rem !important; }
+}
+
 [data-testid="stMetric"] { background: linear-gradient(145deg,#10283b,#0b1928); border: 1px solid #20506a; padding: 12px 14px; border-radius: 12px; }
 [data-testid="stMetricValue"] { color: #75e5ff; }
 .stButton button, .stDownloadButton button { border-radius: 9px; border: 1px solid #247b99; }
@@ -93,36 +112,29 @@ def aero_animation(speed: float, cd: float):
     data = json.dumps({"speed": speed, "cd": cd})
     html = r'''<!doctype html><html><head><style>body{margin:0;background:#071522;color:#eaf7ff;font:13px system-ui}canvas{width:100%;height:280px;border:1px solid #1e536b;border-radius:12px}</style></head><body><canvas id="c" height="280"></canvas><script>const D=__DATA__,c=document.getElementById('c'),x=c.getContext('2d');let t=0;function draw(){let w=c.clientWidth||700,h=280,d=devicePixelRatio||1;c.width=w*d;c.height=h*d;x.setTransform(d,0,0,d,0,0);x.fillStyle='#081927';x.fillRect(0,0,w,h);let cx=w*.5,cy=h*.55,cw=Math.min(220,w*.35),wake=30+D.cd*110;x.strokeStyle='#267b99';x.lineWidth=1.3;for(let j=0;j<9;j++){let yy=22+j*28;x.beginPath();x.moveTo(0,yy);if(yy>cy-45&&yy<cy+45){let side=yy<cy?-1:1;x.bezierCurveTo(cx-70,yy,cx-45,cy+side*65,cx+30,cy+side*48);x.bezierCurveTo(cx+cw*.65,cy+side*45,cx+cw+20,yy,cx+cw+wake,yy+Math.sin(t*.04+j)*13)}else x.lineTo(w,yy);x.stroke()}x.save();x.translate(cx,cy);x.fillStyle='#12516b';x.strokeStyle='#75eaff';x.lineWidth=3;x.beginPath();x.moveTo(0,10);x.lineTo(28,-20);x.quadraticCurveTo(60,-45,115,-43);x.lineTo(170,-42);x.lineTo(cw,2);x.lineTo(cw,21);x.lineTo(0,21);x.closePath();x.fill();x.stroke();for(let wx of [48,cw-40]){x.fillStyle='#030a11';x.beginPath();x.arc(wx,22,15,0,7);x.fill();x.strokeStyle='#8beaff';x.stroke()}x.restore();for(let i=0;i<65;i++){let f=(i/65+t*(.003+D.speed/90000))%1,xx=f*w,yy=28+(i*39)%235;if(xx>cx-25&&xx<cx+cw+10&&yy>cy-55&&yy<cy+65)yy=cy+(yy<cy?-1:1)*62;x.fillStyle='#b4f7ff';x.beginPath();x.arc(xx,yy,1.7,0,7);x.fill()}x.fillStyle='#dff6ff';x.font='bold 14px system-ui';x.fillText('WIND TUNNEL · FLOW LEFT TO RIGHT',15,20);t++;requestAnimationFrame(draw)}draw();</script></body></html>'''.replace("__DATA__", data)
     canvas_component(html, 330)
-
 # --------------------------- Sidebar and dashboard ---------------------------
 PAGES = ["Dashboard", "Stress & materials", "Strength of materials advanced", "Beam & structural", "Shaft & machine design", "Machine design advanced", "Dynamics & vibration", "Manufacturing", "Unit converter", "Thermodynamics", "Thermodynamic cycles", "Heat transfer", "Fluid mechanics", "Fluid statics", "Aerodynamics", "EV battery designer", "EV drivetrain & motor", "EV vehicle simulator", "EV matching & regeneration", "History & reports"]
 with st.sidebar:
     st.markdown("# ⚡ ForgeLab")
     st.caption("MECHANICAL ENGINEERING · EV SYSTEMS")
     search_query = st.text_input(
-    "Search modules",
-    placeholder="Search engineering modules...",
-    key="module_search"
-).strip().casefold()
-
-filtered_pages = [
-    page for page in PAGES
-    if search_query in page.casefold()
-]
-
-if filtered_pages:
-    if st.session_state.get("module_navigation") not in filtered_pages:
-        st.session_state.pop("module_navigation", None)
-
-    current = st.radio(
-        "Navigate modules",
-        filtered_pages,
-        label_visibility="collapsed",
-        key="module_navigation"
-    )
-else:
-    current = "Dashboard"
-    st.warning("No matching modules found.")
+        "Search modules",
+        placeholder="Search engineering modules...",
+        key="module_search",
+    ).strip().casefold()
+    filtered_pages = [page for page in PAGES if search_query in page.casefold()]
+    if filtered_pages:
+        if st.session_state.get("module_navigation") not in filtered_pages:
+            st.session_state.pop("module_navigation", None)
+        current = st.radio(
+            "Navigate modules",
+            filtered_pages,
+            label_visibility="collapsed",
+            key="module_navigation",
+        )
+    else:
+        current = "Dashboard"
+        st.warning("No matching modules found.")
     st.divider()
     st.caption("Core undergraduate engineering calculators and conceptual simulations")
     st.caption("Cloud session history is temporary unless exported.")
@@ -131,21 +143,61 @@ st.title("⚡ ForgeLab Engineering Suite")
 st.caption("Mechanical engineering fundamentals · machine design · thermal-fluid sciences · aerodynamics · electric vehicles")
 
 if current == "Dashboard":
-    st.subheader("Engineering command centre")
-    metrics([("Engineering domains", "10"), ("Calculation modules", "40+"), ("Visual simulations", "5"), ("Reports", "CSV / PDF")])
-    st.info("ForgeLab is a broad educational and preliminary design toolkit. It is not a substitute for certified FEA, CFD, CAD/CAE, experimental validation or engineering sign-off.")
-    cols = st.columns(3)
-    summaries = [("Mechanics & machine design", "Stress, strain, beams, bending, torsion, buckling, gears and vibration."),
-                 ("Thermal & fluid sciences", "Ideal-gas properties, energy balance, Otto cycle, heat transfer, pipe flow and pumping."),
-                 ("EV & aerodynamics", "Battery topology, motor/drivetrain, road-load model, vehicle motion, drag and wind-tunnel visualization.")]
-    for c,(title,desc) in zip(cols,summaries):
-        with c:
-            st.markdown(f"### {title}")
-            st.write(desc)
-    st.markdown("### Typical learning workflow")
-    st.write("1. Select a module. 2. Enter inputs with units. 3. Inspect the calculated result and governing equations. 4. Review diagrams or animations. 5. Export the session history as CSV or PDF.")
-    st.markdown("### Scope boundary")
-    st.write("This release covers a broad core of commonly taught undergraduate mechanical-engineering topics. High-fidelity finite-element analysis, full 3D CAD, turbulence-resolving CFD, combustion chemistry, detailed HVAC component selection, fatigue spectrum/life prediction and certification/code checks remain specialist workflows and are intentionally not represented as solved here.")
+    st.markdown(
+        """
+        <div class="hero-panel">
+          <div class="hero-kicker">ENGINEERING WORKSPACE · 2026</div>
+          <div class="hero-title">Build. Calculate. <span>Innovate.</span></div>
+          <div class="hero-copy">Your interactive workspace for mechanical engineering and electric vehicle systems.</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    metrics([("Engineering modules", "20"), ("Engineering domains", "10"), ("Visual simulations", "5"), ("Report exports", "CSV / PDF")])
+    st.markdown("### Explore engineering modules")
+    st.caption("Choose a workspace to open its calculators, visualizations and engineering tools.")
+    dashboard_groups = [
+        ("⚙️  MECHANICS & DESIGN", [
+            ("Stress & materials", "Stress, strain, material properties and factor of safety."),
+            ("Strength of materials advanced", "Principal stress, pressure vessels and fatigue."),
+            ("Beam & structural", "Beam reactions, shear force, bending moment and deflection."),
+            ("Shaft & machine design", "Shafts, gears and machine components."),
+            ("Machine design advanced", "Advanced mechanical design calculations."),
+            ("Dynamics & vibration", "Motion, forces and vibration analysis."),
+        ]),
+        ("🏭  MANUFACTURING & ENGINEERING TOOLS", [
+            ("Manufacturing", "Manufacturing processes and production engineering."),
+            ("Unit converter", "Convert common engineering units."),
+            ("History & reports", "Review calculations and export reports."),
+        ]),
+        ("🌡️  THERMAL & FLUID SCIENCES", [
+            ("Thermodynamics", "Thermodynamic properties and energy calculations."),
+            ("Thermodynamic cycles", "Ideal gas power and refrigeration cycles."),
+            ("Heat transfer", "Conduction, convection and thermal calculations."),
+            ("Fluid mechanics", "Pipe flow, pumps and fluid energy."),
+            ("Fluid statics", "Hydrostatic pressure and buoyancy."),
+            ("Aerodynamics", "Vehicle drag, lift and airflow visualization."),
+        ]),
+        ("⚡  ELECTRIC VEHICLE SYSTEMS", [
+            ("EV battery designer", "Configure a conceptual series-parallel battery pack."),
+            ("EV drivetrain & motor", "Motor torque, power, gearing and wheel output."),
+            ("EV vehicle simulator", "Explore simplified EV road-load behaviour."),
+            ("EV matching & regeneration", "Match motor and battery, estimate energy recovery."),
+        ]),
+    ]
+    for group_title, modules in dashboard_groups:
+        st.markdown(f'<div class="module-group-title">{group_title}</div>', unsafe_allow_html=True)
+        for start_index in range(0, len(modules), 2):
+            cols = st.columns(2, gap="medium")
+            for col, (module_name, description) in zip(cols, modules[start_index:start_index + 2]):
+                with col:
+                    with st.container(border=True):
+                        st.markdown(f"**{module_name}**")
+                        st.caption(description)
+                        if st.button("Open workspace  →", key=f"dashboard_open_{module_name}", use_container_width=True):
+                            st.session_state["module_navigation"] = module_name
+                            st.rerun()
+    st.info("ForgeLab is an educational and preliminary design toolkit. Validate calculations, assumptions, material data and applicable engineering standards before using results in a real design.")
 
 elif current == "Stress & materials":
     st.subheader("Stress, strain, elasticity and material selection")
@@ -290,6 +342,7 @@ elif current == "Manufacturing":
 
 elif current == "Unit converter":
     st.subheader("Engineering unit converter")
+
     groups={"Length":{"mm":.001,"cm":.01,"m":1.0,"km":1000.0},"Force":{"N":1.0,"kN":1000.0},"Pressure":{"Pa":1.0,"kPa":1000.0,"MPa":1e6,"GPa":1e9,"bar":1e5},"Area":{"mm²":1e-6,"cm²":1e-4,"m²":1.0},"Power":{"W":1.0,"kW":1000.0},"Energy":{"J":1.0,"kJ":1000.0,"Wh":3600.0,"kWh":3.6e6},"Speed":{"m/s":1.0,"km/h":1/3.6},"Torque":{"N·m":1.0,"N·mm":.001}}
     with st.form("converter_form"):
         category=st.selectbox("Quantity",list(groups)); c1,c2=st.columns(2); value=c1.number_input("Value",value=1.0); source=c1.selectbox("From unit",list(groups[category])); target=c2.selectbox("To unit",list(groups[category])); go=st.form_submit_button("Convert units")
@@ -404,8 +457,7 @@ elif current == "Fluid statics":
 
 elif current == "Aerodynamics":
     st.subheader("Vehicle aerodynamics and wind tunnel")
-    with st.form("aero_form"):
-        c1,c2=st.columns(2); v= c1.number_input("Vehicle speed (km/h)",value=100.0,min_value=0.0); rho=c2.number_input("Air density (kg/m³)",value=1.225,min_value=.00001); cd=c1.number_input("Drag coefficient Cd",value=.29,min_value=0.0); A=c2.number_input("Frontal area (m²)",value=2.2,min_value=.00001); cl=c1.number_input("Lift coefficient Cl (+ lift / − downforce)",value=-.1); go=st.form_submit_button("Calculate aerodynamic loads")
+    with        c1,c2=st.columns(2); v= c1.number_input("Vehicle speed (km/h)",value=100.0,min_value=0.0); rho=c2.number_input("Air density (kg/m³)",value=1.225,min_value=.00001); cd=c1.number_input("Drag coefficient Cd",value=.29,min_value=0.0); A=c2.number_input("Frontal area (m²)",value=2.2,min_value=.00001); cl=c1.number_input("Lift coefficient Cl (+ lift / − downforce)",value=-.1); go=st.form_submit_button("Calculate aerodynamic loads")
     if go:
         r=eng.aerodynamics(v,rho,cd,A,cl); result_panel("Aerodynamic load estimate",f"Speed V={v:.2f}/3.6 = {r['speed_m_s']:.3f} m/s\nDynamic pressure q=½ρV² = {r['dynamic_pressure_pa']:.2f} Pa\nDrag D=qCdA = {r['drag_n']:.2f} N\nPower Pdrag=DV = {r['drag_power_kw']:.3f} kW\nLift L=qClA = {r['lift_n']:.2f} N",[r"q=\frac12\rho V^2",r"D=\frac12\rho V^2C_DA",r"P_D=DV",r"L=\frac12\rho V^2C_LA"],[("Aerodynamic drag",f"{r['drag_n']:.1f} N"),("Drag power",f"{r['drag_power_kw']:.2f} kW"),("Lift (signed)",f"{r['lift_n']:.1f} N")],"Steady incompressible external-flow estimate with fixed coefficients; no yaw, ground effect, rotating wheels, ride-height or local pressure distribution. Coefficients require validated source data or tests.")
     aero_animation(v,cd)
@@ -485,4 +537,5 @@ elif current == "History & reports":
     else: st.info("No calculations saved in this browser session yet. Run a module, then return here to export the results.")
 
 st.divider()
-st.caption("ForgeLab is an educational and preliminary engineering tool. Always validate units, material data, boundary conditions, manufacturer ratings, design codes and safety requirements before using any result in a real design.")
+st.caption("ForgeLab is an educational and preliminary engineering tool. Always validate units, material data, boundary conditions, manufacturer ratings, design codes and safety requirements before using any result in a real design.") st.form("aero_form"):
+        

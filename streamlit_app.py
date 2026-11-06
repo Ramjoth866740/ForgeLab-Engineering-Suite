@@ -113,6 +113,9 @@ def aero_animation(speed: float, cd: float):
     html = r'''<!doctype html><html><head><style>body{margin:0;background:#071522;color:#eaf7ff;font:13px system-ui}canvas{width:100%;height:280px;border:1px solid #1e536b;border-radius:12px}</style></head><body><canvas id="c" height="280"></canvas><script>const D=__DATA__,c=document.getElementById('c'),x=c.getContext('2d');let t=0;function draw(){let w=c.clientWidth||700,h=280,d=devicePixelRatio||1;c.width=w*d;c.height=h*d;x.setTransform(d,0,0,d,0,0);x.fillStyle='#081927';x.fillRect(0,0,w,h);let cx=w*.5,cy=h*.55,cw=Math.min(220,w*.35),wake=30+D.cd*110;x.strokeStyle='#267b99';x.lineWidth=1.3;for(let j=0;j<9;j++){let yy=22+j*28;x.beginPath();x.moveTo(0,yy);if(yy>cy-45&&yy<cy+45){let side=yy<cy?-1:1;x.bezierCurveTo(cx-70,yy,cx-45,cy+side*65,cx+30,cy+side*48);x.bezierCurveTo(cx+cw*.65,cy+side*45,cx+cw+20,yy,cx+cw+wake,yy+Math.sin(t*.04+j)*13)}else x.lineTo(w,yy);x.stroke()}x.save();x.translate(cx,cy);x.fillStyle='#12516b';x.strokeStyle='#75eaff';x.lineWidth=3;x.beginPath();x.moveTo(0,10);x.lineTo(28,-20);x.quadraticCurveTo(60,-45,115,-43);x.lineTo(170,-42);x.lineTo(cw,2);x.lineTo(cw,21);x.lineTo(0,21);x.closePath();x.fill();x.stroke();for(let wx of [48,cw-40]){x.fillStyle='#030a11';x.beginPath();x.arc(wx,22,15,0,7);x.fill();x.strokeStyle='#8beaff';x.stroke()}x.restore();for(let i=0;i<65;i++){let f=(i/65+t*(.003+D.speed/90000))%1,xx=f*w,yy=28+(i*39)%235;if(xx>cx-25&&xx<cx+cw+10&&yy>cy-55&&yy<cy+65)yy=cy+(yy<cy?-1:1)*62;x.fillStyle='#b4f7ff';x.beginPath();x.arc(xx,yy,1.7,0,7);x.fill()}x.fillStyle='#dff6ff';x.font='bold 14px system-ui';x.fillText('WIND TUNNEL · FLOW LEFT TO RIGHT',15,20);t++;requestAnimationFrame(draw)}draw();</script></body></html>'''.replace("__DATA__", data)
     canvas_component(html, 330)
 # --------------------------- Sidebar and dashboard ---------------------------
+if "pending_module_navigation" in st.session_state:
+    st.session_state["module_search"] = ""
+    st.session_state["sidebar_navigation"] = st.session_state.pop("pending_module_navigation")
 PAGES = ["Dashboard", "Stress & materials", "Strength of materials advanced", "Beam & structural", "Shaft & machine design", "Machine design advanced", "Dynamics & vibration", "Manufacturing", "Unit converter", "Thermodynamics", "Thermodynamic cycles", "Heat transfer", "Fluid mechanics", "Fluid statics", "Aerodynamics", "EV battery designer", "EV drivetrain & motor", "EV vehicle simulator", "EV matching & regeneration", "History & reports"]
 with st.sidebar:
     st.markdown("# ⚡ ForgeLab")
@@ -124,14 +127,14 @@ with st.sidebar:
     ).strip().casefold()
     filtered_pages = [page for page in PAGES if search_query in page.casefold()]
     if filtered_pages:
-        if st.session_state.get("module_navigation") not in filtered_pages:
-            st.session_state.pop("module_navigation", None)
-        current = st.radio(
-            "Navigate modules",
-            filtered_pages,
-            label_visibility="collapsed",
-            key="module_navigation",
-        )
+        if st.session_state.get("sidebar_navigation") not in filtered_pages:
+    st.session_state.pop("sidebar_navigation", None)
+current = st.radio(
+    "Navigate modules",
+    filtered_pages,
+    label_visibility="collapsed",
+    key="sidebar_navigation",
+)
     else:
         current = "Dashboard"
         st.warning("No matching modules found.")
@@ -195,8 +198,8 @@ if current == "Dashboard":
                         st.markdown(f"**{module_name}**")
                         st.caption(description)
                         if st.button("Open workspace  →", key=f"dashboard_open_{module_name}", use_container_width=True):
-                            st.session_state["module_navigation"] = module_name
-                            st.rerun()
+    st.session_state["pending_module_navigation"] = module_name
+    st.rerun()
     st.info("ForgeLab is an educational and preliminary design toolkit. Validate calculations, assumptions, material data and applicable engineering standards before using results in a real design.")
 
 elif current == "Stress & materials":

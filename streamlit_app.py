@@ -126,7 +126,7 @@ with st.sidebar:
         key="module_search",
     ).strip().casefold()
     filtered_pages = [page for page in PAGES if search_query in page.casefold()]
-        if filtered_pages:
+    if filtered_pages:
         if st.session_state.get("sidebar_navigation") not in filtered_pages:
             st.session_state.pop("sidebar_navigation", None)
 

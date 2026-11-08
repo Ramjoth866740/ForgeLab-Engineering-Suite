@@ -199,8 +199,9 @@ if current == "Dashboard":
                         st.markdown(f"**{module_name}**")
                         st.caption(description)
                         if st.button("Open workspace  →", key=f"dashboard_open_{module_name}", use_container_width=True):
-    st.session_state["pending_module_navigation"] = module_name
-    st.rerun()
+                            if st.button("Open workspace  →", key=f"dashboard_open_{module_name}", use_container_width=True):
+                            st.session_state["pending_module_navigation"] = module_name
+                            st.rerun()
     st.info("ForgeLab is an educational and preliminary design toolkit. Validate calculations, assumptions, material data and applicable engineering standards before using results in a real design.")
 
 elif current == "Stress & materials":
